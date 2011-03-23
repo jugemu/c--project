@@ -34,6 +34,17 @@ void writeString(const string& s, Connection* conn) {
     conn->write('$');   // used to indicate end of the string
 }
 
+string readCommand(Connection* conn)
+{
+  ostringstream oss;
+  char tmp = conn->read();; 
+  while(tmp != COM_END)
+    {
+      oss << tmp;
+      tmp = conn->read();
+    }  
+  return oss.str();
+}
 int main(int argc, char* argv[]){
     if (argc != 2) {
         cerr << "Usage: myserver port-number" << endl;
