@@ -45,6 +45,37 @@ string readCommand(Connection* conn)
     }  
   return oss.str();
 }
+
+string executeCommand(string &input)
+{
+  switch (input[0])
+    {
+    case COM_LIST_NG:
+      break;
+      
+    case COM_CREATE_NG:
+      break;
+      
+    case COM_DELETE_NG:
+      break;
+      
+    case COM_LIST_ART:
+      break;
+      
+    case COM_CREATE_ART:
+      break;
+
+    case COM_DELETE_ART:
+      break;
+
+    case COM_GET_ART:
+      break;
+
+    default:
+      break;
+    }
+}
+
 int main(int argc, char* argv[]){
     if (argc != 2) {
         cerr << "Usage: myserver port-number" << endl;
