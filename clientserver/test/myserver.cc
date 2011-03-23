@@ -3,7 +3,7 @@
 #include "server.h"
 #include "connection.h"
 #include "connectionclosedexception.h"
-#include "database.hh"
+#include "database.h"
 #include "protocol.h"
 
 #include <iostream>
@@ -52,15 +52,25 @@ string readCommand(Connection* conn)
 
 string executeCommand(string &input)
 {
-  switch (input[0])
+  istringstream in(input);
+  string c, answer, name;
+  int newsId;
+  in >> c;
+  switch (c[0])
     {
     case Protocol::COM_LIST_NG:
+      in >> newsId;
+      answer = Database::instance().listNewsgroups();
       break;
       
     case Protocol::COM_CREATE_NG:
+      in >> name;
+      answer = Database::instance().addNewsgroup(name);
       break;
       
     case Protocol::COM_DELETE_NG:
+      in >> newsId;
+      answer = Database::instance().delNewsgroup(newsId);
       break;
       
     case Protocol::COM_LIST_ART:
@@ -78,6 +88,8 @@ string executeCommand(string &input)
     default:
       break;
     }
+  
+  return answer;
 }
 
 int main(int argc, char* argv[]){
@@ -96,13 +108,9 @@ int main(int argc, char* argv[]){
         Connection* conn = server.waitForActivity();
         if (conn != 0) {
             try {
-                int nbr = readNumber(conn);
-                if (nbr > 0)
-                    writeString("Positive", conn);
-                else if (nbr == 0)
-                    writeString("Zero", conn);
-                else
-                    writeString("Negative", conn);
+	      printf("Recived data\n");
+	      string command = readCommand(conn);
+	      writeString(executeCommand(command), conn);
             }
             catch (ConnectionClosedException&) {
                 server.deregisterConnection(conn);

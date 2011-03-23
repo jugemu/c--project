@@ -40,7 +40,7 @@ all: $(PROGS)
 
 # Targets rely on implicit rules for compiling and linking.
 # The dependency on libclientserver.a is not defined.
-myserver: myserver.o  
+myserver: myserver.o  database.o
 myclient: myclient.o
 
 # Standard clean and cleaner
