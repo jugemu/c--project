@@ -3,11 +3,15 @@
 #include "server.h"
 #include "connection.h"
 #include "connectionclosedexception.h"
+#include "database.hh"
+#include "protocol.h"
 
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <sstream>
 
+using namespace protocol;
 using namespace std;
 using client_server::Server;
 using client_server::Connection;
@@ -38,7 +42,7 @@ string readCommand(Connection* conn)
 {
   ostringstream oss;
   char tmp = conn->read();; 
-  while(tmp != COM_END)
+  while(tmp != Protocol::COM_END)
     {
       oss << tmp;
       tmp = conn->read();
@@ -50,25 +54,25 @@ string executeCommand(string &input)
 {
   switch (input[0])
     {
-    case COM_LIST_NG:
+    case Protocol::COM_LIST_NG:
       break;
       
-    case COM_CREATE_NG:
+    case Protocol::COM_CREATE_NG:
       break;
       
-    case COM_DELETE_NG:
+    case Protocol::COM_DELETE_NG:
       break;
       
-    case COM_LIST_ART:
+    case Protocol::COM_LIST_ART:
       break;
       
-    case COM_CREATE_ART:
+    case Protocol::COM_CREATE_ART:
       break;
 
-    case COM_DELETE_ART:
+    case Protocol::COM_DELETE_ART:
       break;
 
-    case COM_GET_ART:
+    case Protocol::COM_GET_ART:
       break;
 
     default:
