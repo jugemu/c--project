@@ -39,7 +39,7 @@
 
 namespace client_server {
     bool Connection::ignoresPipeSignals = false;
-    
+  //test comment th
     Connection::Connection(const char* host, int port) {
         /* 
          * Ignore SIGPIPE signals (broken pipe). A broken pipe (only?) 
