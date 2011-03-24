@@ -121,7 +121,7 @@ int main(int argc, char* argv[]){
 	      string command = readCommand(conn);
 	      string test = "this is a test";
 	      string response = executeCommand(command);
-	      writeString(response, conn);
+ 	      writeString(response, conn);
             }
             catch (ConnectionClosedException&) {
                 server.deregisterConnection(conn);
