@@ -56,30 +56,36 @@ string readCommand(Connection* conn)
 string executeCommand(string &input)
 {
   istringstream in(input);
-  string  answer, name;
-  char c, paranthesis, junk;
+  ostringstream response;
+  string  name;
+  char c, type, length;
   string tmp;
-  int newsId;
+  int id; //identification number
   in >> c;
-  in >> paranthesis;
-  in >> junk; //might be the length of the message
+  in >> type;
+  in >> length; //this isn't the right length because we cut off stuff
   switch (c)
     {
     case Protocol::COM_LIST_NG:
-      in >> newsId;
+      in >> id;
+      response << ANS_LIST_NG << " ";
       answer = Database::instance().listNewsgroups();
+      response << answer.size() << " " << answer;
       break;
       
     case Protocol::COM_CREATE_NG:
       in >> name;
       in >> tmp;
-      cout << in.str() << endl;
-      answer = Database::instance().addNewsgroup(name);
+      response << ANS_CREATE_NG << " ";
+      Database::instance().addNewsgroup(name);
+      response << ANS_ACK << " ";
       break;
       
     case Protocol::COM_DELETE_NG:
-      in >> newsId;
-      answer = Database::instance().delNewsgroup(newsId);
+      in >> id;
+      response << ANS_DELETE_NG << " ";
+      Database::instance().delNewsgroup(newsId);
+      response << ANS_ACK << " ";
       break;
       
     case Protocol::COM_LIST_ART:
@@ -98,6 +104,7 @@ string executeCommand(string &input)
       break;
     }
   
+  response << ANS_END;
   return answer;
 }
 
