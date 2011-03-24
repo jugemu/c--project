@@ -57,7 +57,7 @@ string executeCommand(string &input)
 {
   istringstream in(input);
   ostringstream response;
-  string  name;
+  string  answer, name;
   char c, type, length;
   string tmp;
   int id; //identification number
@@ -68,7 +68,7 @@ string executeCommand(string &input)
     {
     case Protocol::COM_LIST_NG:
       in >> id;
-      response << ANS_LIST_NG << " ";
+      response << Protocol::ANS_LIST_NG << " ";
       answer = Database::instance().listNewsgroups();
       response << answer.size() << " " << answer;
       break;
@@ -76,16 +76,16 @@ string executeCommand(string &input)
     case Protocol::COM_CREATE_NG:
       in >> name;
       in >> tmp;
-      response << ANS_CREATE_NG << " ";
+      response << Protocol::ANS_CREATE_NG << " ";
       Database::instance().addNewsgroup(name);
-      response << ANS_ACK << " ";
+      response << Protocol::ANS_ACK << " ";
       break;
       
     case Protocol::COM_DELETE_NG:
       in >> id;
-      response << ANS_DELETE_NG << " ";
-      Database::instance().delNewsgroup(newsId);
-      response << ANS_ACK << " ";
+      response << Protocol::ANS_DELETE_NG << " ";
+      Database::instance().delNewsgroup(id);
+      response << Protocol::ANS_ACK << " ";
       break;
       
     case Protocol::COM_LIST_ART:
@@ -104,8 +104,8 @@ string executeCommand(string &input)
       break;
     }
   
-  response << ANS_END;
-  return answer;
+  response << Protocol::ANS_END;
+  return response.str();
 }
 
 int main(int argc, char* argv[]){
