@@ -22,7 +22,6 @@ public:
 
 	// Creates a new instance of the Database
   static Database& instance();
-  ödsaliglsbhgidlökjfgvbawödiskfjgahvabögfodsilfkjnvbahfsudi
   
   // Return a string with the listed newsgroups
   string listNewsgroups();
