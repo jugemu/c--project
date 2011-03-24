@@ -70,7 +70,8 @@ string executeCommand(string &input)
       in >> id;
       response << Protocol::ANS_LIST_NG << " ";
       answer = Database::instance().listNewsgroups();
-      response << answer.size() << " " << answer;
+      response << Protocol::PAR_NUM << " " << answer.size() << " ";
+      response << Protocol::PAR_STRING << " " << answer << " ";
       break;
       
     case Protocol::COM_CREATE_NG:

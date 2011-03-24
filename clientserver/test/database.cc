@@ -1,5 +1,6 @@
 #include "database.h"
 #include <sstream>
+#include <protocol.h>
 
 string
 Database::listNewsgroups()
@@ -8,7 +9,8 @@ Database::listNewsgroups()
   oss << newsDb.size() - 1;
   for(MapType::iterator it = newsDb.begin(); it != newsDb.end(); ++it)
     {
-      oss << it->first << " " << it->second.first.size() << " " << it->second.first << " ";
+      oss << Protocol::PAR_NUM << " " << it->second.first.size() + 2 << " " <<
+	it->first << " " << it->second.first << " ";
     }
   return oss.str();
 }
