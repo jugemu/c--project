@@ -1,16 +1,16 @@
 #include "database.h"
 #include <sstream>
 #include <protocol.h>
-
+#include "netutils.h"
 string
 Database::listNewsgroups()
 {
   ostringstream oss;
-  oss << newsDb.size() - 1;
+  writeNumber(oss, newsDb.size());
   for(MapType::iterator it = newsDb.begin(); it != newsDb.end(); ++it)
     {
-      oss << Protocol::PAR_NUM << " " << it->second.first.size() + 2 << " " <<
-	it->first << " " << it->second.first << " ";
+      writeNumber(oss, it->first);
+      writeString(oss, it->second.first);
     }
   return oss.str();
 }

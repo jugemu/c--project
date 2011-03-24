@@ -5,6 +5,7 @@
 #include "connectionclosedexception.h"
 #include "database.h"
 #include "protocol.h"
+#include "netutils.h"
 
 #include <iostream>
 #include <string>
