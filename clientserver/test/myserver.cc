@@ -44,19 +44,26 @@ string readCommand(Connection* conn)
   char tmp = conn->read();; 
   while(tmp != Protocol::COM_END)
     {
-      oss << tmp;
+      if(tmp != NULL) //figure out why the hell we get null values and a paranthesis!
+	oss << tmp;
+      
       tmp = conn->read();
-    }  
+    }
+  cout << oss.str() << endl;
   return oss.str();
 }
 
 string executeCommand(string &input)
 {
   istringstream in(input);
-  string c, answer, name;
+  string  answer, name;
+  char c, paranthesis, junk;
+  string tmp;
   int newsId;
   in >> c;
-  switch (c[0])
+  in >> paranthesis;
+  in >> junk; //might be the length of the message
+  switch (c)
     {
     case Protocol::COM_LIST_NG:
       in >> newsId;
@@ -65,6 +72,8 @@ string executeCommand(string &input)
       
     case Protocol::COM_CREATE_NG:
       in >> name;
+      in >> tmp;
+      cout << in.str() << endl;
       answer = Database::instance().addNewsgroup(name);
       break;
       
@@ -108,9 +117,11 @@ int main(int argc, char* argv[]){
         Connection* conn = server.waitForActivity();
         if (conn != 0) {
             try {
-	      printf("Recived data\n");
+	      cout << "Recived data\n";
 	      string command = readCommand(conn);
-	      writeString(executeCommand(command), conn);
+	      string test = "this is a test";
+	      string response = executeCommand(command);
+	      writeString(response, conn);
             }
             catch (ConnectionClosedException&) {
                 server.deregisterConnection(conn);
