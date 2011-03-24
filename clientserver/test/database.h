@@ -20,8 +20,8 @@ class Database
   
 public:
 
-	// Creates a new instance of the Database
-  static Database& instance();
+	
+  static Database& instance(); // Creates a new instance of the Database
   
   // Return a string with the listed newsgroups
   string listNewsgroups();
