@@ -87,7 +87,7 @@ string executeCommand(string &input)
       Database::instance().delNewsgroup(id);
       response << Protocol::ANS_ACK << " ";
       break;
-      
+
     case Protocol::COM_LIST_ART:
       break;
       
