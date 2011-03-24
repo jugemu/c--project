@@ -8,7 +8,7 @@ Database::listNewsgroups()
   oss << newsDb.size() - 1;
   for(MapType::iterator it = newsDb.begin(); it != newsDb.end(); ++it)
     {
-      oss << it->first << " " << it->second.first.size() << " " << it->second.first;
+      oss << it->first << " " << it->second.first.size() << " " << it->second.first << " ";
     }
   return oss.str();
 }
