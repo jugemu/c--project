@@ -14,9 +14,11 @@ class Database
     string author;
     string text;
   } article;
-
+	
+	typedef map<int, article>::const_iterator ArticleIterator;
   typedef pair<string, map<int, article> > newsgroup;
   typedef map<int, newsgroup> MapType;
+  typedef map<int, newsgroup>::const_iterator MapIterator;
   
 public:
 
