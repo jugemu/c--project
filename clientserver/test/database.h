@@ -14,14 +14,16 @@ class Database
     string author;
     string text;
   } article;
-
+	
+	typedef map<int, article>::const_iterator ArticleIterator;
   typedef pair<string, map<int, article> > newsgroup;
   typedef map<int, newsgroup> MapType;
+  typedef map<int, newsgroup>::const_iterator MapIterator;
   
 public:
 
-	
-  static Database& instance(); // Creates a new instance of the Database
+	// Creates a new instance of the Database
+  static Database& instance();
   
   // Return a string with the listed newsgroups
   string listNewsgroups();
@@ -29,7 +31,7 @@ public:
   // Create a new newsgroup and add it to the database
   int addNewsgroup(string title);
   
-  // TERMINATE D: LINEPIECE D:
+  // Deletes the newsgroup
   int delNewsgroup(int newsId);
   
   // Lists articles in newsgroup
