@@ -36,7 +36,6 @@ int readNumber(Connection* conn) {
 void writeString(const string& s, Connection* conn) {
     for (size_t i = 0; i < s.size(); ++i)
         conn->write(s[i]);
-    conn->write('$');   // used to indicate end of the string
 }
 
 string readCommand(Connection* conn)
@@ -58,9 +57,8 @@ string executeCommand(string &input)
 {
   istringstream in(input);
   ostringstream response;
-  string  answer, name;
+  string  result, name;
   char c, type, length;
-  string tmp;
   int id; //identification number
   in >> c;
   in >> type;
@@ -69,18 +67,16 @@ string executeCommand(string &input)
     {
     case Protocol::COM_LIST_NG:
       in >> id;
-      response << Protocol::ANS_LIST_NG << " ";
-      answer = Database::instance().listNewsgroups();
-      response << Protocol::PAR_NUM << " " << answer.size() << " ";
-      response << Protocol::PAR_STRING << " " << answer << " ";
+      response << Protocol::ANS_LIST_NG;
+      result = Database::instance().listNewsgroups();
+      response << result;
       break;
       
     case Protocol::COM_CREATE_NG:
       in >> name;
-      in >> tmp;
-      response << Protocol::ANS_CREATE_NG << " ";
+      response << Protocol::ANS_CREATE_NG;
       Database::instance().addNewsgroup(name);
-      response << Protocol::ANS_ACK << " ";
+      response << Protocol::ANS_ACK;
       break;
       
     case Protocol::COM_DELETE_NG:
@@ -106,7 +102,7 @@ string executeCommand(string &input)
       break;
     }
   
-  response << Protocol::ANS_END;
+  response << (char)Protocol::ANS_END;
   return response.str();
 }
 

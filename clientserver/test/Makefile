@@ -14,6 +14,7 @@ CC	 = g++
 
 # Define preprocessor and compiler flags
 CPPFLAGS  = -I..
+#need to use c++0x so we can define the enum in protocol to be a char
 CXXFLAGS  = -ggdb  -Wall -W -pedantic-errors
 CXXFLAGS += -Wmissing-braces -Wparentheses -Wold-style-cast
 
