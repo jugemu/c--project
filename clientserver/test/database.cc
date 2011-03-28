@@ -1,12 +1,11 @@
 #include "database.h"
-#include <sstream>
-#include <protocol.h>
+#include "protocol.h"
 #include "netutils.h"
+#include <sstream>
 #include <map>
 #include <iostream>
 
 using namespace std;
-
 
 string
 Database::listNewsgroups()
@@ -60,44 +59,87 @@ Database::listArticles(int newsId)
 	return articles;
 }
 
-int
+string
 Database::addArticle(int newsId, string title, string author, string text)
 {
+	ostringstream oss;
 	article art = {title, author, text};
 
 	if(newsDb.find(newsId) != newsDb.end()) {
+	
+		// COM_CREATE_ART num_p string_p string_p string_p COM_END
+		// ANS_CREATE_ART [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
 		(newsDb[newsId].second)[newsDb[newsId].second.size() + 1] = art;
+		
 	}
 	return 0;
 }
 
-int 
+string 
 Database::delArticle(int newsId, int artId)
 {
+	ostringstream oss;
+	
 	if(newsDb.find(newsId) != newsDb.end()) {
 		if(newsDb.find(newsId)->second.second.find(artId) != newsDb.find(newsId)->second.second.end()) {
 		
 			// IF WE ARE HERE ARTICLE AND NEWSGROUP EXIST
 			// LETS DELETE THE ARTICLE
+			
+			// COM_DELETE_ART num_p num_p COM_END
+			// ANS_DELETE_ART [ANS_ACK |
+			// ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
 			newsDb.find(newsId)->second.second.erase(artId);
+			oss << Protocol::ANS_ACK;
+			return oss.str();
+		} else {
+				oss << Protocol::ANS_NAK;
+				oss << Protocol::ERR_ART_DOES_NOT_EXIST;
+				return oss.str();
 		}
+	} else {
+		oss << Protocol::ANS_NAK;
+		oss << Protocol::ERR_NG_DOES_NOT_EXIST
+		return oss.str();
 	}
-	return 0;
+	
+	// should not happen
+	return "delArticle has done something bad";
+	
 }
 
 string
 Database::getArticle(int newsId, int artId)
 {
+	ostringstream oss;
 	string art;
+	
 	if(newsDb.find(newsId) != newsDb.end()) {
 			if(newsDb.find(newsId)->second.second.find(artId) != newsDb.find(newsId)->second.second.end()) {
 		
 				// IF WE ARE HERE ARTICLE AND NEWSGROUP EXIST
 				// GET ARTICLE
+				
+				// COM_GET_ART num_p num_p COM_END
+				// ANS_GET_ART [ANS_ACK string_p string_p string_p |
+				// ANS_NAK [ERR_NG_DOES_NOT_EXIST | ERR_ART_DOES_NOT_EXIST]] ANS_END
+
 				article temp = newsDb.find(newsId)->second.second.find(artId)->second;
-				art += "\n" + temp.title + "\n" + temp.author + "\n" + temp.text;
-				return art;
+				oss << Protocol::ANS_ACK;			
+      	oss << conToNetString(temp.title);
+      	oss << conToNetString(temp.author);
+      	oss << conToNetString(temp.text);
+      	
+				return oss.str();
+		} else {
+				oss << Protocol::ANS_NAK;
+				oss << Protocol::ERR_ART_DOES_NOT_EXIST;
+				return oss.str();
 		}
+	} else {
+		oss << Protocol::ANS_NAK;
+		oss << Protocol::ERR_NG_DOES_NOT_EXIST;
+		return oss.str();
 	}
 }
 
