@@ -6,6 +6,8 @@
 #include <iostream>
 
 using namespace std;
+using namespace protocol;
+
 
 string
 Database::listNewsgroups()
@@ -20,25 +22,25 @@ Database::listNewsgroups()
   return oss.str();
 }
 
-int
+string
 Database::addNewsgroup(string title)
 {
-  if(title.size() != 0)
+  newsDb[newsDb.size() + 1] = make_pair(title, map<int, article>());
+  return Protocol::ANS_ACK + "";
+}
+
+string
+Database::delNewsgroup(int newsId)
+{
+  int response = newsDb.erase(newsId);
+  if(response != 0)
     {
-        newsDb[newsDb.size() + 1] = make_pair(title, map<int, article>());
+      return Protocol::ANS_ACK + "";
     }
   else
     {
-      cout << "RECIVED EMPTY TITLE!!!!" << endl;
+      return Protocol::ANS_NAK + "" + Protocol::ERR_NG_DOES_NOT_EXIST;
     }
-  return 0;
-}
-
-int
-Database::delNewsgroup(int newsId)
-{
-  newsDb.erase(newsId);
-  return 0;
 }
 
 string
@@ -70,9 +72,11 @@ Database::addArticle(int newsId, string title, string author, string text)
 		// COM_CREATE_ART num_p string_p string_p string_p COM_END
 		// ANS_CREATE_ART [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
 		(newsDb[newsId].second)[newsDb[newsId].second.size() + 1] = art;
-		
+		oss << Protocol::ANS_ACK;
+		return oss.str();
 	}
-	return 0;
+	//oss << Protocol::ANS_NAK ERR_NG_DOES_NOT_EXIST;
+	return oss.str();
 }
 
 string 
@@ -97,15 +101,10 @@ Database::delArticle(int newsId, int artId)
 				oss << Protocol::ERR_ART_DOES_NOT_EXIST;
 				return oss.str();
 		}
-	} else {
-		oss << Protocol::ANS_NAK;
-		oss << Protocol::ERR_NG_DOES_NOT_EXIST
-		return oss.str();
-	}
-	
-	// should not happen
-	return "delArticle has done something bad";
-	
+	} 
+	oss << Protocol::ANS_NAK;
+	oss << Protocol::ERR_NG_DOES_NOT_EXIST;
+	return oss.str();
 }
 
 string
@@ -136,11 +135,10 @@ Database::getArticle(int newsId, int artId)
 				oss << Protocol::ERR_ART_DOES_NOT_EXIST;
 				return oss.str();
 		}
-	} else {
-		oss << Protocol::ANS_NAK;
-		oss << Protocol::ERR_NG_DOES_NOT_EXIST;
-		return oss.str();
-	}
+	} 
+	oss << Protocol::ANS_NAK;
+	oss << Protocol::ERR_NG_DOES_NOT_EXIST;
+	return oss.str();
 }
 
 Database&
