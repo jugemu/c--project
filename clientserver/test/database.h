@@ -48,6 +48,7 @@ public:
   
   // Gets article from newgroup
   string getArticle(int newsId, int artId);
+  
     
 private:
   // Constructs an empty database
