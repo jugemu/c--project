@@ -41,10 +41,10 @@ public:
   string listArticles(int newsId);
   
   // Adds article to newsgroup
-  int addArticle(int newsId, string title, string author, string text);
+  string addArticle(int newsId, string title, string author, string text);
   
   // Delete article in newsgroup
-  int delArticle(int newsId, int artId);
+  string delArticle(int newsId, int artId);
   
   // Gets article from newgroup
   string getArticle(int newsId, int artId);
