@@ -79,7 +79,6 @@ string readCommand(Connection* conn)
 	  i += tmp.size();
 	}
     }
-  cout << oss.str() << endl;
   return oss.str();
 }
 
@@ -91,12 +90,9 @@ string executeCommand(string &input)
   char c, type, length;
   int id; //identification number
   in >> c;
-  in >> type;
-  in >> length; //this isn't the right length because we cut off stuff
   switch (c)
     {
     case Protocol::COM_LIST_NG:
-      in >> id;
       response << Protocol::ANS_LIST_NG;
       result = Database::instance().listNewsgroups();
       response << result;

@@ -6,11 +6,11 @@ string
 Database::listNewsgroups()
 {
   ostringstream oss;
-  writeNumber(oss, newsDb.size());
+  oss << conToNetInt(newsDb.size());
   for(MapType::iterator it = newsDb.begin(); it != newsDb.end(); ++it)
     {
-      writeNumber(oss, it->first);
-      writeString(oss, it->second.first);
+      oss << conToNetInt(it->first);
+      oss << conToNetString(it->second.first);
     }
   return oss.str();
 }

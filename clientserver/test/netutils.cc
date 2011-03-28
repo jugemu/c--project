@@ -23,7 +23,7 @@ string htonl(unsigned input)
 unsigned ntohl(const char *input)
 {
   int val;
-  for(int i = INTSIZE; i > -1; --i)
+  for(int i = (INTSIZE - 1); i > -1; --i)
     {
       val |= input[i] << 4 * i;
     }
@@ -42,24 +42,28 @@ string ntohs(const char *input)
   return oss.str();
 }
   
-void writeNumber(ostringstream &oss, int num)
+string conToNetInt(int num)
 {
+  ostringstream oss;
   oss << Protocol::PAR_NUM;
 #ifdef DEBUG
   oss << num << " ";
 #else
   oss << htonl(num);
 #endif
+  return oss.str();
 }
 
-void writeString(ostringstream &oss, string str)
+string conToNetString(string str)
 {
+  ostringstream oss;
   oss << Protocol::PAR_STRING;
 #ifdef DEBUG
   oss << str.size() << " " << str << " ";
 #else
   oss << htonl(str.size()) << str;
 #endif
+  return oss.str();
 }
 
 
