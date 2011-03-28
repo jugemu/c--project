@@ -25,22 +25,28 @@ Database::listNewsgroups()
 string
 Database::addNewsgroup(string title)
 {
-  newsDb[newsDb.size() + 1] = make_pair(title, map<int, article>());
-  return Protocol::ANS_ACK + "";
+  ostringstream oss;
+  newsDb[free] = make_pair(title, map<int, article>());
+  //replace with hashing function later
+  ++free;
+  oss << Protocol::ANS_ACK;
+  return oss.str();
 }
 
 string
 Database::delNewsgroup(int newsId)
 {
+  ostringstream oss;
   int response = newsDb.erase(newsId);
   if(response != 0)
     {
-      return Protocol::ANS_ACK + "";
+      oss << Protocol::ANS_ACK;
     }
   else
     {
-      return Protocol::ANS_NAK + "" + Protocol::ERR_NG_DOES_NOT_EXIST;
+      oss << Protocol::ANS_NAK << Protocol::ERR_NG_DOES_NOT_EXIST;
     }
+  return oss.str();
 }
 
 string

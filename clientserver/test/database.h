@@ -16,10 +16,10 @@ class Database
   } article;
   
   typedef map<int, article> ArticleMap;
-  typedef pair<string, ArticleMap> newsgroup;
+  typedef pair<string, ArticleMap> Newsgroup;
   
-  typedef map<int, newsgroup> MapType;
-  typedef map<int, newsgroup>::const_iterator MapIterator;
+  typedef map<int, Newsgroup> MapType;
+  typedef map<int, Newsgroup>::const_iterator MapIterator;
   
   typedef ArticleMap::const_iterator ArticleIterator;
   
@@ -52,9 +52,11 @@ public:
     
 private:
   // Constructs an empty database
-  Database(){};
+ Database() : free(0)
+    {};
   
   // Declares a Map map<int, pair<string, map<int, article> > >
   MapType newsDb;
+  unsigned long free; //ful hack...
 };
 #endif

@@ -99,12 +99,13 @@ string executeCommand(string &input)
     case Protocol::COM_CREATE_NG:
       in >> name;
       response << Protocol::ANS_CREATE_NG;
-      response << Database::instance().addNewsgroup(name);
+      result =  Database::instance().addNewsgroup(name);
+      response << result;
       break;
       
     case Protocol::COM_DELETE_NG:
       in >> newsID;
-      response << Protocol::ANS_DELETE_NG << " ";
+      response << Protocol::ANS_DELETE_NG;
       response << Database::instance().delNewsgroup(newsID);
       break;
 
