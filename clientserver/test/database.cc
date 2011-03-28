@@ -3,18 +3,20 @@
 #include <protocol.h>
 #include "netutils.h"
 #include <map>
+#include <iostream>
 
 using namespace std;
+
 
 string
 Database::listNewsgroups()
 {
   ostringstream oss;
-  writeNumber(oss, newsDb.size());
+  oss << conToNetInt(newsDb.size());
   for(MapType::iterator it = newsDb.begin(); it != newsDb.end(); ++it)
     {
-      writeNumber(oss, it->first);
-      writeString(oss, it->second.first);
+      oss << conToNetInt(it->first);
+      oss << conToNetString(it->second.first);
     }
   return oss.str();
 }
@@ -22,7 +24,14 @@ Database::listNewsgroups()
 int
 Database::addNewsgroup(string title)
 {
-  newsDb[newsDb.size() + 1] = make_pair(title, map<int, article>());
+  if(title.size() != 0)
+    {
+        newsDb[newsDb.size() + 1] = make_pair(title, map<int, article>());
+    }
+  else
+    {
+      cout << "RECIVED EMPTY TITLE!!!!" << endl;
+    }
   return 0;
 }
 
@@ -85,8 +94,8 @@ Database::getArticle(int newsId, int artId)
 		
 				// IF WE ARE HERE ARTICLE AND NEWSGROUP EXIST
 				// GET ARTICLE
-				article temp = newsDb.find(newsId)->second.second.find(artId);
-				art += "\n" + temp.title + "\n" + temp.author + "\n" temp.text ;	
+				article temp = newsDb.find(newsId)->second.second.find(artId)->second;
+				art += "\n" + temp.title + "\n" + temp.author + "\n" + temp.text;
 				return art;
 		}
 	}
