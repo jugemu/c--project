@@ -2,6 +2,7 @@
 #include <sstream>
 #include <protocol.h>
 #include "netutils.h"
+#include <iostream>
 string
 Database::listNewsgroups()
 {
@@ -18,7 +19,14 @@ Database::listNewsgroups()
 int
 Database::addNewsgroup(string title)
 {
-  newsDb[newsDb.size() + 1] = make_pair(title, map<int, article>());
+  if(title.size() != 0)
+    {
+        newsDb[newsDb.size() + 1] = make_pair(title, map<int, article>());
+    }
+  else
+    {
+      cout << "RECIVED EMPTY TITLE!!!!" << endl;
+    }
   return 0;
 }
 

@@ -36,20 +36,10 @@ int readNumber(Connection* conn) {
  * Send the string 's' to a client.
  */
 void writeString(const string& s, Connection* conn) {
-    for (size_t i = 0; i < s.size(); ++i)
-      {
-	conn->write(s[i]);
-	
-	if(s[i] == Protocol::PAR_NUM)
-	  {
-	    ++i;
-	    unsigned tmp = i + sizeof(int);
-	    for(; i < tmp; ++i)
-	      {
-		conn->write(s[i] - '0');
-	      }
-	  }
-      }
+  for (size_t i = 0; i < s.size(); ++i)
+    {
+      conn->write(s[i]);
+    }
 }
 
 string readCommand(Connection* conn)
@@ -62,6 +52,15 @@ string readCommand(Connection* conn)
   while(tmp != Protocol::COM_END)
     {
       iss << tmp;
+      if(tmp == Protocol::PAR_NUM || tmp == Protocol::PAR_STRING)
+	{
+	  //hack to get around the fact that a number byte might be equal to 8 and
+	  //therfore equal to COM_END
+	  iss << conn->read();
+	  iss << conn->read();
+	  iss << conn->read();
+	  iss << conn->read();
+	}
       tmp = conn->read();
     }
   string input = iss.str();
@@ -94,8 +93,7 @@ string executeCommand(string &input)
     {
     case Protocol::COM_LIST_NG:
       response << Protocol::ANS_LIST_NG;
-      result = Database::instance().listNewsgroups();
-      response << result;
+      response << Database::instance().listNewsgroups();
       break;
       
     case Protocol::COM_CREATE_NG:
@@ -148,9 +146,7 @@ int main(int argc, char* argv[]){
         Connection* conn = server.waitForActivity();
         if (conn != 0) {
             try {
-	      cout << "Recived data\n";
 	      string command = readCommand(conn);
-	      string test = "this is a test";
 	      string response = executeCommand(command);
  	      writeString(response, conn);
             }
