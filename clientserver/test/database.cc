@@ -2,6 +2,10 @@
 #include <sstream>
 #include <protocol.h>
 #include "netutils.h"
+#include <map>
+
+using namespace std;
+
 string
 Database::listNewsgroups()
 {
@@ -31,17 +35,62 @@ Database::delNewsgroup(int newsId)
 
 string
 Database::listArticles(int newsId)
-{}
+{
+	// find returns an iterator, iterator is NULL if it points to the last element in the map
+	string articles;
+	if(newsDb.find(newsId) != newsDb.end()) {
+		
+		string newsgroupName = newsDb.find(newsId)->second.first;
+		
+		ArticleIterator mapItEnd = newsDb.find(newsId)->second.second.end();
+		
+		for(ArticleIterator mapItBegin = newsDb.find(newsId)->second.second.begin(); mapItBegin != mapItEnd; ++mapItBegin) {			
+			articles = articles + "\n" + mapItBegin->second.title + "\n" + mapItBegin->second.author + "\n" + mapItBegin->second.text;
+		}
+	}
+	return articles;
+}
 
 int
 Database::addArticle(int newsId, string title, string author, string text)
-{}
+{
+	article art = {title, author, text};
 
-int delArticle(int newsId, int artId)
-{}
+	if(newsDb.find(newsId) != newsDb.end()) {
+		(newsDb[newsId].second)[newsDb[newsId].second.size() + 1] = art;
+	}
+	return 0;
+}
 
-string getArticle(int newsId, int artId)
-{}
+int 
+Database::delArticle(int newsId, int artId)
+{
+	if(newsDb.find(newsId) != newsDb.end()) {
+		if(newsDb.find(newsId)->second.second.find(artId) != newsDb.find(newsId)->second.second.end()) {
+		
+			// IF WE ARE HERE ARTICLE AND NEWSGROUP EXIST
+			// LETS DELETE THE ARTICLE
+			newsDb.find(newsId)->second.second.erase(artId);
+		}
+	}
+	return 0;
+}
+
+string
+Database::getArticle(int newsId, int artId)
+{
+	string art;
+	if(newsDb.find(newsId) != newsDb.end()) {
+			if(newsDb.find(newsId)->second.second.find(artId) != newsDb.find(newsId)->second.second.end()) {
+		
+				// IF WE ARE HERE ARTICLE AND NEWSGROUP EXIST
+				// GET ARTICLE
+				article temp = newsDb.find(newsId)->second.second.find(artId);
+				art += "\n" + temp.title + "\n" + temp.author + "\n" temp.text ;	
+				return art;
+		}
+	}
+}
 
 Database&
 Database::instance()
