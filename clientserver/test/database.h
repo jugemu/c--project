@@ -32,10 +32,10 @@ public:
   string listNewsgroups();
   
   // Create a new newsgroup and add it to the database
-  int addNewsgroup(string title);
+  string addNewsgroup(string title);
   
   // Deletes the newsgroup
-  int delNewsgroup(int newsId);
+  string delNewsgroup(int newsId);
   
   // Lists articles in newsgroup
   string listArticles(int newsId);

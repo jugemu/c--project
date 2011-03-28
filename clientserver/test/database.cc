@@ -1,12 +1,12 @@
 #include "database.h"
 #include <sstream>
-#include <protocol.h>
+#include "protocol.h"
 #include "netutils.h"
 #include <map>
 #include <iostream>
 
 using namespace std;
-
+using namespace protocol;
 
 string
 Database::listNewsgroups()
@@ -21,25 +21,25 @@ Database::listNewsgroups()
   return oss.str();
 }
 
-int
+string
 Database::addNewsgroup(string title)
 {
-  if(title.size() != 0)
+  newsDb[newsDb.size() + 1] = make_pair(title, map<int, article>());
+  return Protocol::ANS_ACK + "";
+}
+
+string
+Database::delNewsgroup(int newsId)
+{
+  int response = newsDb.erase(newsId);
+  if(response != 0)
     {
-        newsDb[newsDb.size() + 1] = make_pair(title, map<int, article>());
+      return Protocol::ANS_ACK + "";
     }
   else
     {
-      cout << "RECIVED EMPTY TITLE!!!!" << endl;
+      return Protocol::ANS_NAK + "" + Protocol::ERR_NG_DOES_NOT_EXIST;
     }
-  return 0;
-}
-
-int
-Database::delNewsgroup(int newsId)
-{
-  newsDb.erase(newsId);
-  return 0;
 }
 
 string

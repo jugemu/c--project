@@ -1,6 +1,6 @@
 #include "netutils.h"
-#include "protocol.h"
 #include <iostream>
+#include "protocol.h"
 
 //#define DEBUG
 #define INTSIZE sizeof(int)
