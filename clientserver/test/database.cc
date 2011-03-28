@@ -88,7 +88,8 @@ Database::addArticle(int newsId, string title, string author, string text)
 	
 		// COM_CREATE_ART num_p string_p string_p string_p COM_END
 		// ANS_CREATE_ART [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
-		(newsDb[newsId].second)[newsDb[newsId].second.size() + 1] = art;
+		newsDb.find(newsId)->second.second[free] = art;
+
 		oss << Protocol::ANS_ACK;
 		return oss.str();
 	}
