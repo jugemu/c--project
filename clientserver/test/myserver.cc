@@ -12,6 +12,8 @@
 #include <cstdlib>
 #include <sstream>
 
+#define INTSIZE sizeof(int)
+
 using namespace protocol;
 using namespace std;
 using client_server::Server;
@@ -35,19 +37,47 @@ int readNumber(Connection* conn) {
  */
 void writeString(const string& s, Connection* conn) {
     for (size_t i = 0; i < s.size(); ++i)
-        conn->write(s[i]);
+      {
+	conn->write(s[i]);
+	
+	if(s[i] == Protocol::PAR_NUM)
+	  {
+	    ++i;
+	    unsigned tmp = i + sizeof(int);
+	    for(; i < tmp; ++i)
+	      {
+		conn->write(s[i] - '0');
+	      }
+	  }
+      }
 }
 
 string readCommand(Connection* conn)
 {
+  ostringstream iss;
   ostringstream oss;
-  char tmp = conn->read();; 
+  oss << conn->read(); //command type
+  char tmp = conn->read();
+  
   while(tmp != Protocol::COM_END)
     {
-      if(tmp != NULL) //figure out why the hell we get null values and a paranthesis!
-	oss << tmp;
-      
+      iss << tmp;
       tmp = conn->read();
+    }
+  string input = iss.str();
+  for(unsigned i = 0; i < input.size(); ++i)
+    {
+      if(input[i] == Protocol::PAR_NUM)
+	{
+	  oss << " " << ntohl(&input[i + 1]);
+	  i += INTSIZE;
+	}
+      else if(input[i] == Protocol::PAR_STRING)
+	{
+	  string tmp = ntohs(&input[i + 1]);
+	  oss << " " << tmp;
+	  i += tmp.size();
+	}
     }
   cout << oss.str() << endl;
   return oss.str();
@@ -102,7 +132,7 @@ string executeCommand(string &input)
       break;
     }
   
-  response << (char)Protocol::ANS_END;
+  response << Protocol::ANS_END;
   return response.str();
 }
 
