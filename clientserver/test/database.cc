@@ -47,18 +47,29 @@ string
 Database::listArticles(int newsId)
 {
 	// find returns an iterator, iterator is NULL if it points to the last element in the map
+	ostringstream oss;
 	string articles;
+
 	if(newsDb.find(newsId) != newsDb.end()) {
-		
 		string newsgroupName = newsDb.find(newsId)->second.first;
-		
 		ArticleIterator mapItEnd = newsDb.find(newsId)->second.second.end();
 		
+		oss << Protocol::ANS_ACK;
+		oss << conToNetInt(newsDb.find(newsId)->second.second.size());
+		
 		for(ArticleIterator mapItBegin = newsDb.find(newsId)->second.second.begin(); mapItBegin != mapItEnd; ++mapItBegin) {			
-			articles = articles + "\n" + mapItBegin->second.title + "\n" + mapItBegin->second.author + "\n" + mapItBegin->second.text;
+			// COM_LIST_ART num_p COM_END
+			// ANS_LIST_ART [ANS_ACK num_p [num_p string_p]* |
+			// ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
+			oss << mapItBegin->first;
+			oss << mapItBegin->second.title;
 		}
+		return oss.str();
 	}
-	return articles;
+	
+	oss << Protocol::ANS_NAK;
+	oss << Protocol::ERR_NG_DOES_NOT_EXIST;
+	return oss.str();
 }
 
 string
@@ -75,7 +86,8 @@ Database::addArticle(int newsId, string title, string author, string text)
 		oss << Protocol::ANS_ACK;
 		return oss.str();
 	}
-	//oss << Protocol::ANS_NAK ERR_NG_DOES_NOT_EXIST;
+	oss << Protocol::ANS_NAK;
+	oss << Protocol::ERR_NG_DOES_NOT_EXIST;
 	return oss.str();
 }
 
