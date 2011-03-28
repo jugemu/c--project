@@ -85,9 +85,9 @@ string executeCommand(string &input)
 {
   istringstream in(input);
   ostringstream response;
-  string  result, name;
-  char c, type, length;
-  int id; //identification number
+  string  result, name, author, text;
+  char c;
+  int newsID, artID; //identification number
   in >> c;
   switch (c)
     {
@@ -103,24 +103,42 @@ string executeCommand(string &input)
       break;
       
     case Protocol::COM_DELETE_NG:
-      in >> id;
+      in >> newsID;
       response << Protocol::ANS_DELETE_NG << " ";
-      response << Database::instance().delNewsgroup(id);
+      response << Database::instance().delNewsgroup(newsID);
       break;
 
     case Protocol::COM_LIST_ART:
+      in >> newsID;
+      response << Protocol::ANS_LIST_ART;
+      response << Database::instance().listArticles(newsID);
       break;
       
     case Protocol::COM_CREATE_ART:
+      in >> newsID;
+      in >> name;
+      in >> author;
+      in >> text;
+      response << Protocol::ANS_CREATE_ART;
+      response << Database::instance().addArticle(newsID, name, author, text);
       break;
 
     case Protocol::COM_DELETE_ART:
+      in >> newsID;
+      in >> artID;
+      response << Protocol::ANS_DELETE_ART;
+      response << Database::instance().delArticle(newsID, artID);
       break;
 
     case Protocol::COM_GET_ART:
+      in >> newsID;
+      in >> artID;
+      response << Protocol::ANS_GET_ART;
+      response << Database::instance().getArticle(newsID, artID);
       break;
 
     default:
+      cout << "Recived unknown command: " << c << endl;
       break;
     }
   
