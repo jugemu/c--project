@@ -3,7 +3,7 @@
 //                 Client/Server communication package
 //
 //                     Connection implementation file
-//
+//dfds
 // Change log
 //  950323  RH  Initial version
 //  951212  RH  Modified to allow subclassing of class Connection
