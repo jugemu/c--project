@@ -9,6 +9,33 @@ using namespace std;
 
 class Database
 {
+ public:
+   // Return a string with the listed newsgroups
+  virtual string listNewsgroups() = 0;
+  
+  // Create a new newsgroup and add it to the database
+  virtual string addNewsgroup(string title) = 0;
+  
+  // Deletes the newsgroup
+  virtual string delNewsgroup(int newsId) = 0;
+  
+  // Lists articles in newsgroup
+  virtual string listArticles(int newsId) = 0;
+  
+  // Adds article to newsgroup
+  virtual string addArticle(int newsId, string title, string author, string text) = 0;
+  
+  // Delete article in newsgroup
+  virtual string delArticle(int newsId, int artId) = 0;
+  
+  // Gets article from newgroup
+  virtual string getArticle(int newsId, int artId) = 0;
+
+  virtual ~Database(){};
+};
+
+class RamDatabase : public Database
+{
   typedef struct {
     string title;
     string author;
@@ -25,9 +52,9 @@ class Database
   
 public:
 
-	// Creates a new instance of the Database
-  static Database& instance();
-  
+ RamDatabase() : free(0)
+    {};
+
   // Return a string with the listed newsgroups
   string listNewsgroups();
   
@@ -51,12 +78,9 @@ public:
   
     
 private:
-  // Constructs an empty database
- Database() : free(0)
-    {};
-  
-  // Declares a Map map<int, pair<string, map<int, article> > >
+   // Declares a Map map<int, pair<string, map<int, article> > >
   MapType newsDb;
+  map<string, bool> NBnames, ARTnames;
   unsigned long free; //ful hack...
 };
 #endif

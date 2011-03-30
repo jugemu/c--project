@@ -28,15 +28,6 @@ unsigned ntohl(const char *input)
     {
       val |= (input[i]) << 8 * (INTSIZE - i - 1);
     }
-  if(val == 0)
-    {
-      cout << "VAL IS ZERO" << endl;
-      for(int i = 0; i < INTSIZE; ++i)
-	{
-	  cout << "value at position " << i << " is " << input[i];
-	}
-      cout << endl;
-    }
   return val;
 }
 

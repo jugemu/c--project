@@ -10,7 +10,7 @@ using namespace protocol;
 
 
 string
-Database::listNewsgroups()
+RamDatabase::listNewsgroups()
 {
   ostringstream oss;
   oss << conToNetInt(newsDb.size());
@@ -23,23 +23,32 @@ Database::listNewsgroups()
 }
 
 string
-Database::addNewsgroup(string title)
+RamDatabase::addNewsgroup(string title)
 {
   ostringstream oss;
-  newsDb[free] = make_pair(title, map<int, article>());
-  //replace with hashing function later
-  ++free;
-  oss << Protocol::ANS_ACK;
+  if(ARTnames.find(title) != ARTnames.end())
+    {
+      oss << Protocol::ANS_NAK << Protocol::ERR_NG_ALREADY_EXISTS;
+    }
+  else {
+    ARTnames[title];
+    newsDb[free] = make_pair(title, map<int, article>());
+    //replace with hashing function later
+    ++free;
+    oss << Protocol::ANS_ACK;
+  }
   return oss.str();
 }
 
 string
-Database::delNewsgroup(int newsId)
+RamDatabase::delNewsgroup(int newsId)
 {
   ostringstream oss;
-  int response = newsDb.erase(newsId);
-  if(response != 0)
+  MapType::iterator tmp = newsDb.find(newsId);
+  if(tmp != newsDb.end())
     {
+      NBnames.erase(tmp->second.first);//delete the name
+       newsDb.erase(tmp);
       oss << Protocol::ANS_ACK;
     }
   else
@@ -50,25 +59,25 @@ Database::delNewsgroup(int newsId)
 }
 
 string
-Database::listArticles(int newsId)
+RamDatabase::listArticles(int newsId)
 {
 	// find returns an iterator, iterator is NULL if it points to the last element in the map
 	ostringstream oss;
 	string articles;
-
-	if(newsDb.find(newsId) != newsDb.end()) {
-		string newsgroupName = newsDb.find(newsId)->second.first;
-		ArticleIterator mapItEnd = newsDb.find(newsId)->second.second.end();
+	MapType::iterator it = newsDb.find(newsId);
+	if(it != newsDb.end()) {
+		string newsgroupName = it->second.first;
+		ArticleIterator mapItEnd = it->second.second.end();
 		
 		oss << Protocol::ANS_ACK;
-		oss << conToNetInt(newsDb.find(newsId)->second.second.size());
+		oss << conToNetInt(it->second.second.size());
 		
-		for(ArticleIterator mapItBegin = newsDb.find(newsId)->second.second.begin(); mapItBegin != mapItEnd; ++mapItBegin) {			
-			// COM_LIST_ART num_p COM_END
-			// ANS_LIST_ART [ANS_ACK num_p [num_p string_p]* |
-			// ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
-			oss << mapItBegin->first;
-			oss << mapItBegin->second.title;
+		for(ArticleIterator mapItBegin = it->second.second.begin(); mapItBegin != mapItEnd; ++mapItBegin) {			
+		  // COM_LIST_ART num_p COM_END
+		  // ANS_LIST_ART [ANS_ACK num_p [num_p string_p]* |
+		  // ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
+		  oss << conToNetInt(mapItBegin->first);
+		  oss << conToNetString(mapItBegin->second.title);
 		}
 		return oss.str();
 	}
@@ -79,17 +88,16 @@ Database::listArticles(int newsId)
 }
 
 string
-Database::addArticle(int newsId, string title, string author, string text)
+RamDatabase::addArticle(int newsId, string title, string author, string text)
 {
 	ostringstream oss;
 	article art = {title, author, text};
-
 	if(newsDb.find(newsId) != newsDb.end()) {
 	
 		// COM_CREATE_ART num_p string_p string_p string_p COM_END
 		// ANS_CREATE_ART [ANS_ACK | ANS_NAK ERR_NG_DOES_NOT_EXIST] ANS_END
 		newsDb.find(newsId)->second.second[free] = art;
-
+		++free;
 		oss << Protocol::ANS_ACK;
 		return oss.str();
 	}
@@ -99,7 +107,7 @@ Database::addArticle(int newsId, string title, string author, string text)
 }
 
 string 
-Database::delArticle(int newsId, int artId)
+RamDatabase::delArticle(int newsId, int artId)
 {
 	ostringstream oss;
 	
@@ -127,7 +135,7 @@ Database::delArticle(int newsId, int artId)
 }
 
 string
-Database::getArticle(int newsId, int artId)
+RamDatabase::getArticle(int newsId, int artId)
 {
 	ostringstream oss;
 	string art;
@@ -160,10 +168,11 @@ Database::getArticle(int newsId, int artId)
 	return oss.str();
 }
 
-Database&
+/*Database&
 Database::instance()
 {
   
   static Database db;
   return db;
 }
+*/

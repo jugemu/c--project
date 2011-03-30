@@ -32,7 +32,7 @@ LDLIBS	 = -lclientserver
 SRC	= $(wildcard *.cc)
 
 # Targets
-PROGS	= myserver myclient
+PROGS	= myserver myclient ourclient
 
 # Phony targets
 .PHONY: all clean cleaner
@@ -43,7 +43,7 @@ all: $(PROGS)
 # The dependency on libclientserver.a is not defined.
 myserver: myserver.o  database.o netutils.o
 myclient: myclient.o
-
+ourclient: ourclient.o
 # Standard clean and cleaner
 clean:
 	$(RM) *.o

@@ -13,6 +13,7 @@
 #include <sstream>
 
 #define INTSIZE sizeof(int)
+#define delimiter '|'
 
 using namespace protocol;
 using namespace std;
@@ -20,6 +21,7 @@ using client_server::Server;
 using client_server::Connection;
 using client_server::ConnectionClosedException;
 
+static RamDatabase db;
 /*
  * Read an integer from a client.
  */
@@ -68,16 +70,17 @@ string readCommand(Connection* conn)
     {
       if(input[i] == Protocol::PAR_NUM)
 	{
-	  oss << " " << ntohl(&input[i + 1]);
+	  oss << ntohl(&input[i + 1]) << " ";
 	  i += INTSIZE;
 	}
       else if(input[i] == Protocol::PAR_STRING)
 	{
 	  string tmp = ntohs(&input[i + 1]);
-	  oss << " " << tmp;
+	  oss << tmp << delimiter;
 	  i += tmp.size();
 	}
     }
+  oss << delimiter; //insert final delimiter so that we now where text in an article ends
   return oss.str();
 }
 
@@ -93,49 +96,50 @@ string executeCommand(string &input)
     {
     case Protocol::COM_LIST_NG:
       response << Protocol::ANS_LIST_NG;
-      response << Database::instance().listNewsgroups();
+      response << db.listNewsgroups();
       break;
       
     case Protocol::COM_CREATE_NG:
-      in >> name;
+      getline(in, name, delimiter);
       response << Protocol::ANS_CREATE_NG;
-      result =  Database::instance().addNewsgroup(name);
+      result =  db.addNewsgroup(name);
       response << result;
       break;
       
     case Protocol::COM_DELETE_NG:
       in >> newsID;
       response << Protocol::ANS_DELETE_NG;
-      response << Database::instance().delNewsgroup(newsID);
+      response << db.delNewsgroup(newsID);
       break;
 
     case Protocol::COM_LIST_ART:
       in >> newsID;
       response << Protocol::ANS_LIST_ART;
-      response << Database::instance().listArticles(newsID);
+      response << db.listArticles(newsID);
       break;
       
     case Protocol::COM_CREATE_ART:
       in >> newsID;
-      in >> name;
-      in >> author;
-      in >> text;
+      in.get(); //throw away extra space
+      getline(in, name, delimiter);
+      getline(in, author, delimiter);
+      getline(in, text, delimiter);
       response << Protocol::ANS_CREATE_ART;
-      response << Database::instance().addArticle(newsID, name, author, text);
+      response << db.addArticle(newsID, name, author, text);
       break;
 
     case Protocol::COM_DELETE_ART:
       in >> newsID;
       in >> artID;
       response << Protocol::ANS_DELETE_ART;
-      response << Database::instance().delArticle(newsID, artID);
+      response << db.delArticle(newsID, artID);
       break;
 
     case Protocol::COM_GET_ART:
       in >> newsID;
       in >> artID;
       response << Protocol::ANS_GET_ART;
-      response << Database::instance().getArticle(newsID, artID);
+      response << db.getArticle(newsID, artID);
       break;
 
     default:
