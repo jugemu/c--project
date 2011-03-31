@@ -3,10 +3,12 @@
 #include "protocol.h"
 
 //#define DEBUG
+#define delimiter '|'
 #define INTSIZE sizeof(int)
 
 using namespace std;
 using namespace protocol;
+using namespace client_server;
 
 string htonl(unsigned input)
 {
@@ -72,3 +74,52 @@ string conToNetString(string str)
 }
 
 
+/*
+ * Send the string 's' to a client.
+ */
+void sendString(const string& s, Connection* conn) {
+  for (size_t i = 0; i < s.size(); ++i)
+    {
+      conn->write(s[i]);
+    }
+}
+
+string readCommand(Connection* conn, char endbyte)
+{
+  ostringstream iss;
+  ostringstream oss;
+  oss << conn->read(); //command type
+  char tmp = conn->read();
+  
+  while(tmp != endbyte)
+    {
+      iss << tmp;
+      if(tmp == Protocol::PAR_NUM || tmp == Protocol::PAR_STRING)
+	{
+	  //hack to get around the fact that a number byte might be equal to 8 and
+	  //therfore equal to COM_END
+	  iss << conn->read();
+	  iss << conn->read();
+	  iss << conn->read();
+	  iss << conn->read();
+	}
+      tmp = conn->read();
+    }
+  string input = iss.str();
+  for(unsigned i = 0; i < input.size(); ++i)
+    {
+      if(input[i] == Protocol::PAR_NUM)
+	{
+	  oss << ntohl(&input[i + 1]) << " ";
+	  i += INTSIZE;
+	}
+      else if(input[i] == Protocol::PAR_STRING)
+	{
+	  string tmp = ntohs(&input[i + 1]);
+	  oss << tmp << delimiter;
+	  i += tmp.size();
+	}
+    }
+  oss << delimiter; //insert final delimiter so that we now where text in an article ends
+  return oss.str();
+}

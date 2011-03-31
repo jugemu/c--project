@@ -43,7 +43,7 @@ all: $(PROGS)
 # The dependency on libclientserver.a is not defined.
 myserver: myserver.o  database.o netutils.o
 myclient: myclient.o
-ourclient: ourclient.o
+ourclient: ourclient.o netutils.o
 # Standard clean and cleaner
 clean:
 	$(RM) *.o

@@ -34,55 +34,6 @@ int readNumber(Connection* conn) {
         (byte3 << 8) | byte4;
 }
 
-/*
- * Send the string 's' to a client.
- */
-void writeString(const string& s, Connection* conn) {
-  for (size_t i = 0; i < s.size(); ++i)
-    {
-      conn->write(s[i]);
-    }
-}
-
-string readCommand(Connection* conn)
-{
-  ostringstream iss;
-  ostringstream oss;
-  oss << conn->read(); //command type
-  char tmp = conn->read();
-  
-  while(tmp != Protocol::COM_END)
-    {
-      iss << tmp;
-      if(tmp == Protocol::PAR_NUM || tmp == Protocol::PAR_STRING)
-	{
-	  //hack to get around the fact that a number byte might be equal to 8 and
-	  //therfore equal to COM_END
-	  iss << conn->read();
-	  iss << conn->read();
-	  iss << conn->read();
-	  iss << conn->read();
-	}
-      tmp = conn->read();
-    }
-  string input = iss.str();
-  for(unsigned i = 0; i < input.size(); ++i)
-    {
-      if(input[i] == Protocol::PAR_NUM)
-	{
-	  oss << ntohl(&input[i + 1]) << " ";
-	  i += INTSIZE;
-	}
-      else if(input[i] == Protocol::PAR_STRING)
-	{
-	  string tmp = ntohs(&input[i + 1]);
-	  oss << tmp << delimiter;
-	  i += tmp.size();
-	}
-    }
-  oss << delimiter; //insert final delimiter so that we now where text in an article ends
-  return oss.str();
-}
 
 string executeCommand(string &input)
 {
@@ -167,9 +118,9 @@ int main(int argc, char* argv[]){
         Connection* conn = server.waitForActivity();
         if (conn != 0) {
             try {
-	      string command = readCommand(conn);
+	      string command = readCommand(conn, Protocol::COM_END);
 	      string response = executeCommand(command);
- 	      writeString(response, conn);
+ 	      sendString(response, conn);
             }
             catch (ConnectionClosedException&) {
                 server.deregisterConnection(conn);
