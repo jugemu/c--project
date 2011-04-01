@@ -4,6 +4,8 @@
 
 #include <map>
 #include <string>
+#include <sys/types.h>
+#include <dirent.h>
 
 using namespace std;
 
@@ -82,5 +84,39 @@ private:
   MapType newsDb;
   map<string, bool> NBnames, ARTnames;
   unsigned long free; //ful hack...
+};
+
+class DiskDatabase : public Database
+{
+ public:
+  DiskDatabase();
+  // Return a string with the listed newsgroups
+  string listNewsgroups();
+  
+  // Create a new newsgroup and add it to the database
+  string addNewsgroup(string title);
+  
+  // Deletes the newsgroup
+  string delNewsgroup(int newsId);
+  
+  // Lists articles in newsgroup
+  string listArticles(int newsId);
+  
+  // Adds article to newsgroup
+  string addArticle(int newsId, string title, string author, string text);
+  
+  // Delete article in newsgroup
+  string delArticle(int newsId, int artId);
+  
+  // Gets article from newgroup
+  string getArticle(int newsId, int artId);
+ private:
+  bool isNgNameTaken(string title);
+  bool isArtNameTaken(struct dirent* ng, string title);
+  static const char* rootpath;
+  unsigned long free;
+  struct dirent* findNewsgroup(int newsId);
+  struct dirent* findArt(struct dirent*, int artId);
+
 };
 #endif

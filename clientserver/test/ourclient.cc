@@ -13,9 +13,24 @@ string prettifyResponse(const string &input)
 {
   istringstream iss(input);
   ostringstream oss;
-  char respType;
+  char respType, respStatus;
   iss >> respType;
-  iss >> respType;
+  iss >> respStatus;
+  if(respType == Protocol::ANS_DELETE_NG && respStatus == Protocol:: ANS_NAK){
+    return "The newsgroup does not exist";
+  }
+  else if(respType == Protocol::ANS_LIST_ART && respStatus == Protocol:: ANS_NAK){
+    return "The newsgroup does not exist";
+  }
+  else if(respType == Protocol::ANS_CREATE_ART && respStatus == Protocol:: ANS_NAK){
+    return "The newsgroup does not exist";
+  }
+  else if(respType == Protocol::ANS_DELETE_ART && respStatus == Protocol:: ANS_NAK){
+    return "The newsgroup or the article does not exist";
+  }
+  else if(respType == Protocol::ANS_GET_ART && respStatus == Protocol:: ANS_NAK){
+    return "The newsgroup or the article does not exist";
+  }
   string tmp;
   while(iss.good())
     {
@@ -38,7 +53,7 @@ int main(int argc, char** argv)
       cout << "Failed to connect";
       return 1;
     }
-  static const string cmdhelp = "listng -- no parameters returns a list of all avalible newsgroups\ncreateng $name -- creates a newsgroup with the title $name\ndelng $id -- deletes the newsgroup with #id\ncreateart $id $title $author $text -- creates an article in newsgroup #id\nlistart $id -- list all articles in the newsgroup #id\n getart $newsId $artId -- gets article #artId from newsgroup #newsId\n";
+  static const string cmdhelp = "listng -- no parameters returns a list of all avalible newsgroups\ncreateng $name -- creates a newsgroup with the title $name\ndelng $id -- deletes the newsgroup with #id\ncreateart $id $title $author $text -- creates an article in newsgroup #id\nlistart $id -- list all articles in the newsgroup #id\ngetart $newsId $artId -- gets article #artId from newsgroup #newsId\n";
   string response;
   while(true)
     {
@@ -99,6 +114,8 @@ int main(int argc, char** argv)
 	  cout << cmdhelp;
 	  continue;
 	}
+      else if(cmd == "exit")
+	return 0;
       else
 	{
 	  cout << "Invalid command";

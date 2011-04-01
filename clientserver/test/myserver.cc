@@ -21,7 +21,7 @@ using client_server::Server;
 using client_server::Connection;
 using client_server::ConnectionClosedException;
 
-static RamDatabase db;
+static DiskDatabase db;
 /*
  * Read an integer from a client.
  */
@@ -120,6 +120,7 @@ int main(int argc, char* argv[]){
             try {
 	      string command = readCommand(conn, Protocol::COM_END);
 	      string response = executeCommand(command);
+	      cout << response << endl;
  	      sendString(response, conn);
             }
             catch (ConnectionClosedException&) {
